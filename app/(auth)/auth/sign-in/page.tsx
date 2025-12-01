@@ -5,7 +5,7 @@ import SignInFormClient from '@/modules/auth/components/sign-in-form-client';
 function page() {
   return (
     <>
-    <Image src={"/login.svg"} alt='Login-Image' height={300} width={300} />
+    <Image src={"/login.svg"} alt='Login-Image' height={200} width={200} />
     <SignInFormClient />
     </>
   )
