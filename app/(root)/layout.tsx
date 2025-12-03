@@ -1,4 +1,4 @@
-import Footer from "@/modules/home/footer";
+import { Footer } from "@/modules/home/footer";
 import { Header } from "@/modules/home/header";
 import { Metadata } from "next";
 
