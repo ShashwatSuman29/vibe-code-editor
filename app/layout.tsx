@@ -1,3 +1,11 @@
+import "@fontsource/geist/400.css";
+import "@fontsource/geist/700.css";
+
+import "@fontsource/geist-mono/400.css";
+import "@fontsource/geist-mono/700.css";
+
+
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
