@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import React , {useCallback, useEffect, useState, useMemo, useRef, useReducer} from "react";
 import { useParams } from "next/navigation";
 import { usePlayground } from "@/modules/playground/hooks/usePlayground";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,25 +8,54 @@ import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Header } from "@/modules/home/header";
 import { Separator } from "@radix-ui/react-separator";
 import { TemplateFileTree } from "@/modules/playground/components/playground-explorer";
+import { useFileExplorer } from "@/modules/playground/hooks/useFileExplorer";
+import { TemplateFile } from "@/modules/playground/lib/page-to-json";
 
 
 const MainPlaygroundPage = () => {
-  const [activeFile, setActiveFile] = React.useState<string | null>(null);
+  
   const { id } = useParams<{ id: string }>();
   const { playgroundData, templateData, isLoading, error, saveTemplateData } =
     usePlayground(id);
-  console.log("Playground Data:", playgroundData);
-  console.log("Template Data:", templateData);
-  console.log("Is Loading:", isLoading);
-  console.log("Error:", error);
-  console.log("Save Template Data:", saveTemplateData);
+
+  const {
+     setTemplateData,
+     setActiveFileId,
+     setPlaygroundId,
+     setOpenFiles,
+       activeFileId,
+       closeAllFiles,
+       openFile,
+       openFiles
+
+  } = useFileExplorer(); 
+  
+
+  useEffect(() => {setPlaygroundId(id)}, [id, setPlaygroundId]);
+  useEffect(() => {
+    if (templateData &&  !openFiles.length) {
+      setTemplateData(templateData);
+    }
+  }, [templateData, setTemplateData, openFiles.length]);
+
+
+  const activeFile = openFiles.find((file) => file.id === activeFileId);
+  const hasUnsavedChanges = openFiles.some((file) => file.hasUnsavedChanges);
+
+  const handleFileSelect = (file:TemplateFile)=>{
+    openFile(file);
+  };
+  
+
+ 
+ 
 
   return (
     <TooltipProvider>
       <>
         <TemplateFileTree
           data={templateData!}
-          onFileSelect={() => {}}
+          onFileSelect={handleFileSelect}
           selectedFile={activeFile}
           title="File Explorer"
           onAddFile={() => {}}
@@ -54,3 +84,6 @@ const MainPlaygroundPage = () => {
   );
 };
 export default MainPlaygroundPage;
+
+
+
