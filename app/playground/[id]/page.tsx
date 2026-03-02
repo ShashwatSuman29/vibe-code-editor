@@ -50,6 +50,8 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable";
 import PlaygroundEditor from "@/modules/playground/components/playground-editor";
+import { useWebContainer } from "@/modules/webcontainers/hooks/useWebcontainer";
+import WebContainerPreview from "@/modules/webcontainers/components/webcontainer-preview";
 
 const MainPlaygroundPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,6 +70,16 @@ const MainPlaygroundPage = () => {
     closeFile,
     openFiles,
   } = useFileExplorer();
+
+  const {
+    serverUrl,
+    isLoading: containerLoading,
+    error: containerError,
+    instance,
+    writeFileSync,
+  } = useWebContainer({
+    templateData: templateData || undefined,
+  });
 
   useEffect(() => {
     setPlaygroundId(id);
@@ -88,18 +100,20 @@ const MainPlaygroundPage = () => {
   return (
     <TooltipProvider>
       <>
-        <TemplateFileTree
-          data={templateData!}
-          onFileSelect={handleFileSelect}
-          selectedFile={activeFile}
-          title="File Explorer"
-          onAddFile={() => {}}
-          onAddFolder={() => {}}
-          onDeleteFile={() => {}}
-          onDeleteFolder={() => {}}
-          onRenameFile={() => {}}
-          onRenameFolder={() => {}}
-        />
+        {templateData && (
+          <TemplateFileTree
+            data={templateData}
+            onFileSelect={handleFileSelect}
+            selectedFile={activeFile}
+            title="File Explorer"
+            onAddFile={() => {}}
+            onAddFolder={() => {}}
+            onDeleteFile={() => {}}
+            onDeleteFolder={() => {}}
+            onRenameFile={() => {}}
+            onRenameFolder={() => {}}
+          />
+        )}
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
@@ -222,17 +236,40 @@ const MainPlaygroundPage = () => {
                   </Tabs>
                 </div>
                 <div className="flex-1">
-                  <ResizablePanelGroup direction="horizontal" className="h-full">
-                    <ResizablePanel defaultSize={isPreviewVisible ? 50: 100}>
+                  <ResizablePanelGroup
+                    direction="horizontal"
+                    className="h-full"
+                  >
+                    <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
                       <PlaygroundEditor
                         activeFile={activeFile}
-                        content={activeFile?.content || activeFile?.originalContent || ""}
+                        content={
+                          activeFile?.content ||
+                          activeFile?.originalContent ||
+                          ""
+                        }
                         onContentChange={() => {}}
-                        />
-
-
+                      />
                     </ResizablePanel>
 
+                    {isPreviewVisible && (
+                      <>
+                        <ResizableHandle />
+                        <ResizablePanel defaultSize={50}>
+                          {templateData && (
+                            <WebContainerPreview
+                              templateData={templateData}
+                              instance={instance}
+                              writeFileSync={writeFileSync}
+                              isLoading={containerLoading}
+                              error={containerError}
+                              serverUrl={serverUrl || ""}
+                              forceResetup={false}
+                            />
+                          )}
+                        </ResizablePanel>
+                      </>
+                    )}
                   </ResizablePanelGroup>
                 </div>
               </div>
