@@ -262,7 +262,7 @@ const MainPlaygroundPage = () => {
                               instance={instance}
                               writeFileSync={writeFileSync}
                               isLoading={containerLoading}
-                              error={containerError}
+                              error={containerError && containerError.message}
                               serverUrl={serverUrl || ""}
                               forceResetup={false}
                             />
